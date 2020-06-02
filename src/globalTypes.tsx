@@ -1,0 +1,1 @@
+export type ChildrenType = React.ReactNode | JSX.Element | Array<JSX.Element>
