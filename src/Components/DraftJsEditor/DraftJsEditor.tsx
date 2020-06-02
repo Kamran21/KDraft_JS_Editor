@@ -1,24 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useReducer } from "react";
 
 import {
   Editor,
   EditorState,
   RichUtils,
   getDefaultKeyBinding,
-  KeyBindingUtil
+  KeyBindingUtil,
 } from "draft-js";
 
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import clsx from "clsx";
-import { inlineStyleButtons, blockLevelButtons, styleMap } from "./data";
+import { styleMap, StyleMapType, CustomStyleType, toolBarBtns } from "./data";
 
-import { InlineElmBtn, BlockElmBtn } from "../MenuBtns/MenuBtns";
+import { KeyValueMap } from "../../globalTypes";
+import { ToolBar } from "../ToolBar/ToolBar";
+
+const BlockWithMetaDataWrapper: React.FC = (props: any) => {
+  const { block, contentState, children, blockProps } = props;
+  const data = contentState.getEntity(block.getEntityAt(0)).getData();
+  return <div {...blockProps}>{children}</div>;
+};
+
+const myBlockRenderer = (data: KeyValueMap) => (contentBlock: any) => {
+  const type = contentBlock.getType();
+  if (type === "meta-block") {
+    return {
+      component: BlockWithMetaDataWrapper,
+      editable: false,
+      props: data,
+    };
+  }
+};
 
 function keyBindingFunction(event: any) {
   if (
     KeyBindingUtil.hasCommandModifier(event) &&
     event.shiftKey &&
-    event.key === "x"
+    (event.key === "x" || event.key === "X")
   ) {
     return "strikethrough";
   }
@@ -50,7 +68,7 @@ function keyBindingFunction(event: any) {
   if (
     KeyBindingUtil.hasCommandModifier(event) &&
     event.shiftKey &&
-    event.key === "h"
+    (event.key === "h" || event.key === "H")
   ) {
     return "highlight";
   }
@@ -58,7 +76,7 @@ function keyBindingFunction(event: any) {
   if (
     KeyBindingUtil.hasCommandModifier(event) &&
     event.shiftKey &&
-    event.key === "p"
+    (event.key === "p" || event.key === "P")
   ) {
     return "paint";
   }
@@ -70,28 +88,53 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: 500,
-      margin: "50px auto"
+      margin: "50px auto",
     },
 
     editorWrapper: {
-      border: "1px solid #ccc"
+      border: "1px solid #ccc",
     },
     editorContent: {
       minHeight: 250,
-      padding: 5
+      padding: 5,
     },
     buttonsGroup: {
       display: "flex",
       // justifyContent: "space-between",
       flexWrap: "wrap",
-      padding: 5
-    }
+      padding: 5,
+    },
   })
 );
 
 export const DraftJsEditor: React.FC = () => {
   const classes = useStyles();
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
+  const customeStylesReducer = (state: any, action: StyleMapType) => {
+    switch (action.type) {
+      case "PAINT":
+        return { ...state, [action.type]: action.payload };
+      case "ALIGN":
+        return { ...state, [action.type]: action.payload };
+      default:
+        return state;
+    }
+  };
+
+  const [customeStyles, dispatchCustomStyles] = useReducer(
+    customeStylesReducer,
+    styleMap
+  );
+
+  const handleDispatchCustomStyle = (
+    type: CustomStyleType,
+    payload: any,
+    isInlineElement: boolean = true
+  ) => {
+    dispatchCustomStyles({ type, payload });
+    isInlineElement ? setStyle(type, "style") : setStyle(type, "block");
+  };
 
   const onChange = (editorState: EditorState) => {
     setEditorState(editorState);
@@ -136,74 +179,39 @@ export const DraftJsEditor: React.FC = () => {
     }
 
     if (newEditorState) {
-      setEditorState(editorState);
+      setEditorState(newEditorState);
       return "handled";
     }
 
     return "not-handled";
   };
 
-  const setInlineStyle = (style: string) =>
-    setEditorState(RichUtils.toggleInlineStyle(editorState, style));
-
-  const toggleInlineStyle = (event: any) => {
-    event.preventDefault();
-    let style = event.currentTarget.getAttribute("data-style");
-    setInlineStyle(style);
-  };
-
-  const setBlockLevelStyle = (block: string) =>
-    setEditorState(RichUtils.toggleBlockType(editorState, block));
-
-  const toggleBlockType = (event: any) => {
-    event.preventDefault();
-    let block = event.currentTarget.getAttribute("data-block");
-    setBlockLevelStyle(block);
-  };
+  const setStyle = (data: string, type: string) =>
+    type === "style"
+      ? setEditorState(RichUtils.toggleInlineStyle(editorState, data))
+      : setEditorState(RichUtils.toggleBlockType(editorState, data));
 
   return (
     <div className={classes.root}>
       <h2>Draft.JS Editor</h2>
       <div className={classes.editorWrapper}>
-        <div className={classes.buttonsGroup}>
-          {inlineStyleButtons.map(button => {
-            return (
-              <InlineElmBtn
-                style={button.style}
-                value={button.value}
-                editorState={editorState}
-                handleClick={toggleInlineStyle}
-              >
-                {button.icon || button.value}
-              </InlineElmBtn>
-            );
-          })}
-        </div>
-
-        <div className={classes.buttonsGroup}>
-          {blockLevelButtons.map(button => {
-            return (
-              <BlockElmBtn
-                block={button.block}
-                value={button.value}
-                editorState={editorState}
-                handleClick={toggleBlockType}
-              >
-                {button.icon || button.value}
-              </BlockElmBtn>
-            );
-          })}
-        </div>
+        <ToolBar
+          editorState={editorState}
+          btns={toolBarBtns}
+          setStyle={setStyle}
+          dispatch={handleDispatchCustomStyle}
+        />
       </div>
 
       <div className={clsx(classes.editorWrapper, classes.editorContent)}>
         <Editor
-          customStyleMap={styleMap}
+          customStyleMap={customeStyles}
           placeholder={"Start typing!"}
           editorState={editorState}
           onChange={onChange}
           handleKeyCommand={handleKeyCommand}
           keyBindingFn={keyBindingFunction}
+          blockRendererFn={myBlockRenderer({ name: "meta-data-block" })}
         />
       </div>
     </div>

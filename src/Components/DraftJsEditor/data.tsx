@@ -1,6 +1,5 @@
 import React from "react";
 import { MenuBtnIconLookup } from "./MenuBtnIconLookup";
-import { black } from "color-name";
 
 export type InlineStyleButtonsType = {
   value: string;
@@ -8,42 +7,40 @@ export type InlineStyleButtonsType = {
   icon?: any;
 };
 
-export const inlineStyleButtons: InlineStyleButtonsType[] = [
+export const inlineBtns: InlineStyleButtonsType[] = [
   {
     value: "B",
-    style: "BOLD"
+    style: "BOLD",
+    icon: <MenuBtnIconLookup icon="FormatBoldIcon" />,
   },
 
   {
     value: "I",
-    style: "ITALIC"
+    style: "ITALIC",
+    icon: <MenuBtnIconLookup icon="FormatItalicIcon" />,
   },
 
   {
     value: "U",
-    style: "UNDERLINE"
+    style: "UNDERLINE",
+    icon: <MenuBtnIconLookup icon="FormatUnderlinedIcon" />,
   },
 
   {
     value: "Strikethrough",
-    style: "STRIKETHROUGH"
+    style: "STRIKETHROUGH",
   },
 
   {
     value: "<>",
-    style: "CODE"
+    style: "CODE",
+    icon: <MenuBtnIconLookup icon="CodeIcon" />,
   },
 
   {
     value: "Highlight",
-    style: "HIGHLIGHT"
+    style: "HIGHLIGHT",
   },
-
-  {
-    icon: <MenuBtnIconLookup icon="PaletteIcon" />,
-    value: "PaletteIcon",
-    style: "ColorPicker"
-  }
 ];
 
 export type BlockLevelButtonsType = {
@@ -51,43 +48,103 @@ export type BlockLevelButtonsType = {
   block: string;
   icon?: any;
 };
-export const blockLevelButtons: BlockLevelButtonsType[] = [
+export const blockBtns: BlockLevelButtonsType[] = [
   {
     value: "H1",
-    block: "header-one"
+    block: "header-one",
   },
 
   {
     value: "H2",
-    block: "header-two"
+    block: "header-two",
   },
 
   {
     value: "H3",
-    block: "header-three"
+    block: "header-three",
   },
 
   {
     value: "Blockquote",
-    block: "blockquote"
+    block: "blockquote",
   },
 
   {
     value: "Unordered List",
-    block: "unordered-list-item"
+    block: "unordered-list-item",
+    icon: <MenuBtnIconLookup icon="FormatListBulletedIcon" />,
   },
 
   {
     value: "Ordered List",
-    block: "ordered-list-item"
-  }
+    block: "ordered-list-item",
+    icon: <MenuBtnIconLookup icon="FormatListNumberedIcon" />,
+  },
 ];
+
+export type CustomStyleType = "HIGHLIGHT" | "PAINT" | "ALIGN";
+
+export type StyleMapType =
+  | { type: "HIGHLIGHT" }
+  | { type: "PAINT"; payload: any }
+  | { type: "ALIGN"; payload: any };
+
+export type DispatchStyles = (
+  type: CustomStyleType,
+  payload: any,
+  isInlineElement: boolean
+) => void;
 
 export const styleMap = {
   HIGHLIGHT: {
-    backgroundColor: "#faed27"
+    backgroundColor: "#faed27",
   },
   PAINT: {
-    color: "red"
-  }
+    color: "#000",
+  },
+  ALIGN: {
+    textAlign: "left",
+  },
 };
+
+export type CssButtonsType = {
+  value: string;
+  style: CustomStyleType;
+  css?: any;
+  icon?: any;
+  isInlineElement?: boolean;
+};
+
+export const cssBtns: CssButtonsType[] = [
+  {
+    value: "left",
+    style: "ALIGN",
+    css: {
+      textAlign: "left",
+    },
+    icon: <MenuBtnIconLookup icon="FormatAlignLeftIcon" />,
+    isInlineElement: false,
+  },
+
+  {
+    value: "right",
+    style: "ALIGN",
+    css: {
+      textAlign: "right",
+    },
+    icon: <MenuBtnIconLookup icon="FormatAlignRightIcon" />,
+    isInlineElement: false,
+  },
+
+  {
+    value: "center",
+    style: "ALIGN",
+    css: {
+      textAlign: "center",
+    },
+    icon: <MenuBtnIconLookup icon="FormatAlignCenterIcon" />,
+    isInlineElement: false,
+  },
+];
+
+export const toolBarBtns = { cssBtns, blockBtns, inlineBtns };

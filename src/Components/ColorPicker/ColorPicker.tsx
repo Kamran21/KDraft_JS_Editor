@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import Button from "@material-ui/core/Button";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
+import clsx from "clsx";
+import { EditorState, RichUtils } from "draft-js";
+import { Button, Menu, MenuItem } from "@material-ui/core";
+import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import PaletteIcon from "@material-ui/icons/Palette";
 import { SketchPicker } from "react-color";
-import { ChildrenType } from "../../globalTypes";
-import { EditorState, RichUtils } from "draft-js";
 
-import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
-import clsx from "clsx";
+import { CustomStyleType, DispatchStyles } from "../DraftJsEditor/data";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,23 +21,23 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: 2,
 
       "&:active": {
-        transform: "scale(.95)"
+        transform: "scale(.95)",
       },
 
       "&:hover": {
-        backgroundColor: "#eee"
-      }
+        backgroundColor: "#eee",
+      },
     },
     activeButton: {
       backgroundColor: "turquoise",
-      borderColor: "transparent"
+      borderColor: "transparent",
     },
     buttonsGroup: {
       display: "flex",
       // justifyContent: "space-between",
       flexWrap: "wrap",
-      padding: 5
-    }
+      padding: 5,
+    },
   })
 );
 
@@ -47,16 +45,18 @@ export interface Props {
   editorState: EditorState;
   value: string;
   style: string;
+  dispatchStyle: DispatchStyles;
 }
 
-export const colortPicker: React.FC<Props> = ({
+export const ColorPicker: React.FC<Props> = ({
   editorState,
   value,
-  style
+  style,
+  dispatchStyle,
 }) => {
   const classes = useStyles();
   const [selectedColor, setSelectedColor] = useState("#000");
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -68,6 +68,7 @@ export const colortPicker: React.FC<Props> = ({
 
   const handleChangeComplete = (color: any) => {
     setSelectedColor(color.hex);
+    dispatchStyle("PAINT", { color: color.hex }, true);
   };
 
   return (
