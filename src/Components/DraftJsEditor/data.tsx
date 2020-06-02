@@ -1,5 +1,6 @@
 import React from "react";
 import { MenuBtnIconLookup } from "./MenuBtnIconLookup";
+import { black } from "color-name";
 
 export type InlineStyleButtonsType = {
   value: string;
@@ -85,5 +86,8 @@ export const blockLevelButtons: BlockLevelButtonsType[] = [
 export const styleMap = {
   HIGHLIGHT: {
     backgroundColor: "#faed27"
+  },
+  PAINT: {
+    color: "red"
   }
 };

@@ -55,6 +55,14 @@ function keyBindingFunction(event: any) {
     return "highlight";
   }
 
+  if (
+    KeyBindingUtil.hasCommandModifier(event) &&
+    event.shiftKey &&
+    event.key === "p"
+  ) {
+    return "paint";
+  }
+
   return getDefaultKeyBinding(event);
 }
 
@@ -123,6 +131,10 @@ export const DraftJsEditor: React.FC = () => {
       newEditorState = RichUtils.toggleInlineStyle(editorState, "HIGHLIGHT");
     }
 
+    if (!newEditorState && command === "paint") {
+      newEditorState = RichUtils.toggleInlineStyle(editorState, "PAINT");
+    }
+
     if (newEditorState) {
       setEditorState(editorState);
       return "handled";
@@ -131,16 +143,22 @@ export const DraftJsEditor: React.FC = () => {
     return "not-handled";
   };
 
+  const setInlineStyle = (style: string) =>
+    setEditorState(RichUtils.toggleInlineStyle(editorState, style));
+
   const toggleInlineStyle = (event: any) => {
     event.preventDefault();
     let style = event.currentTarget.getAttribute("data-style");
-    setEditorState(RichUtils.toggleInlineStyle(editorState, style));
+    setInlineStyle(style);
   };
+
+  const setBlockLevelStyle = (block: string) =>
+    setEditorState(RichUtils.toggleBlockType(editorState, block));
 
   const toggleBlockType = (event: any) => {
     event.preventDefault();
     let block = event.currentTarget.getAttribute("data-block");
-    setEditorState(RichUtils.toggleBlockType(editorState, block));
+    setBlockLevelStyle(block);
   };
 
   return (
