@@ -16,6 +16,7 @@
     "@types/react-dom": "^16.9.8",
     "clsx": "^1.1.1",
     "draft-js": "^0.11.5",
+    "draft-js-modifiers": "^0.2.2",
     "install": "^0.13.0",
     "npm": "^6.14.5",
     "react": "^16.13.1",

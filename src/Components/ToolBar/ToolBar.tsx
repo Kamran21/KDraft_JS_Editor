@@ -1,12 +1,16 @@
 import React from "react";
 import { EditorState } from "draft-js";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
-import { InlineElmBtn, BlockElmBtn, InlineCSSBtn } from "../MenuBtns/MenuBtns";
+import { CssBtn } from "../MenuBtns/CssBtn";
+import { InlineBtn } from "../MenuBtns/InlineBtn";
+import { BlockBtn } from "../MenuBtns/BlockBtn";
+import { DataBtn } from "../MenuBtns/DataBtn";
 import { ColorPicker } from "../ColorPicker/ColorPicker";
 import {
   InlineStyleButtonsType,
   BlockLevelButtonsType,
   CssButtonsType,
+  CustomStyleType
 } from "../DraftJsEditor/data";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -14,8 +18,8 @@ const useStyles = makeStyles((theme: Theme) =>
     buttonsGroup: {
       display: "flex",
       flexWrap: "wrap",
-      padding: 5,
-    },
+      padding: 5
+    }
   })
 );
 
@@ -26,8 +30,13 @@ interface Props {
     blockBtns: BlockLevelButtonsType[];
     cssBtns: CssButtonsType[];
   };
-  setStyle: any;
-  dispatch: any;
+  setStyle: (data: string, type: string) => void;
+  dispatch: (
+    type: CustomStyleType,
+    payload: any,
+    isInlineElement?: boolean
+  ) => void;
+  setEditorState: (editorState: EditorState) => void;
 }
 
 export const ToolBar: React.FC<Props> = ({
@@ -35,6 +44,7 @@ export const ToolBar: React.FC<Props> = ({
   btns,
   setStyle,
   dispatch,
+  setEditorState
 }) => {
   const classes = useStyles();
   const { inlineBtns, blockBtns, cssBtns } = btns;
@@ -48,16 +58,16 @@ export const ToolBar: React.FC<Props> = ({
   return (
     <div>
       <div className={classes.buttonsGroup}>
-        {inlineBtns.map((button) => {
+        {inlineBtns.map(button => {
           return (
-            <InlineElmBtn
+            <InlineBtn
               style={button.style}
               value={button.value}
               editorState={editorState}
               handleClick={toggleStyle("style")}
             >
               {button.icon || button.value}
-            </InlineElmBtn>
+            </InlineBtn>
           );
         })}
         <ColorPicker
@@ -66,27 +76,34 @@ export const ToolBar: React.FC<Props> = ({
           style="PAINT"
           dispatchStyle={dispatch}
         />
+        <DataBtn
+          style="DATA_BTN"
+          blockType="meta-block"
+          data={{ id: "1212121212" }}
+          editorState={editorState}
+          setEditorState={setEditorState}
+        />
       </div>
 
       <div className={classes.buttonsGroup}>
-        {blockBtns.map((button) => {
+        {blockBtns.map(button => {
           return (
-            <BlockElmBtn
+            <BlockBtn
               block={button.block}
               value={button.value}
               editorState={editorState}
               handleClick={toggleStyle("block")}
             >
               {button.icon || button.value}
-            </BlockElmBtn>
+            </BlockBtn>
           );
         })}
       </div>
 
       <div className={classes.buttonsGroup}>
-        {cssBtns.map((button) => {
+        {cssBtns.map(button => {
           return (
-            <InlineCSSBtn
+            <CssBtn
               style={button.style}
               value={button.value}
               css={button.css}
@@ -95,7 +112,7 @@ export const ToolBar: React.FC<Props> = ({
               dispatchStyle={dispatch}
             >
               {button.icon || button.value}
-            </InlineCSSBtn>
+            </CssBtn>
           );
         })}
       </div>
