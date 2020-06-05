@@ -1,43 +1,54 @@
 import React from "react";
+
 import { EditorState, RichUtils } from "draft-js";
+
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import clsx from "clsx";
-import { ChildrenType } from "../../globalTypes";
-import {styles} from './btn.style'
+import { ChildrenType } from "../../../globalTypes";
+import { DispatchStyles, CustomStyleType } from "../data";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles(styles)
-);
+import { styles } from "./btn.style";
+
+const useStyles = makeStyles((theme: Theme) => createStyles(styles));
 
 export interface Props {
   editorState: EditorState;
   value: string;
-  block: string;
-  handleClick: (event: any) => void;
+  style: CustomStyleType;
+  isInlineElement?: boolean;
+  css: any;
+  dispatchStyle: DispatchStyles;
   children: ChildrenType;
 }
 
-export const BlockBtn: React.FC<Props> = ({
+export const CssBtn: React.FC<Props> = ({
   editorState,
   value,
-  block,
-  handleClick,
+  style,
+  isInlineElement = true,
+  css,
+  dispatchStyle,
   children
 }) => {
   const classes = useStyles();
   const handleMouseDown = (e: any) => e.preventDefault();
 
+  const handleClick = (e: any) => {
+    dispatchStyle(style, css, isInlineElement);
+  };
+
   return (
     <button
       type="button"
-      key={block}
+      key={style}
       // value={value}
       className={clsx(
         classes.button,
-        RichUtils.getCurrentBlockType(editorState) === block &&
+        RichUtils.getCurrentBlockType(editorState) === style &&
           classes.activeButton
       )}
-      data-block={block}
+      data-style={style}
+      data-css={css}
       onClick={handleClick}
       onMouseDown={handleMouseDown}
     >

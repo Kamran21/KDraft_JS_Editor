@@ -6,7 +6,7 @@ import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import PaletteIcon from "@material-ui/icons/Palette";
 import { SketchPicker } from "react-color";
 
-import { CustomStyleType, DispatchStyles } from "../DraftJsEditor/data";
+import { CustomStyleType, DispatchStyles } from "../data";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

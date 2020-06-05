@@ -11,7 +11,7 @@ import {
   BlockLevelButtonsType,
   CssButtonsType,
   CustomStyleType
-} from "../DraftJsEditor/data";
+} from "../data";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

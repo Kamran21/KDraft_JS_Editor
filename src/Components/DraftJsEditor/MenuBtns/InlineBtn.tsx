@@ -4,8 +4,8 @@ import { EditorState, RichUtils } from "draft-js";
 
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import clsx from "clsx";
-import { ChildrenType } from "../../globalTypes";
-import { DispatchStyles, CustomStyleType } from "../DraftJsEditor/data";
+import { ChildrenType } from "../../../globalTypes";
+import { DispatchStyles, CustomStyleType } from "../data";
 import {styles} from './btn.style'
 
 const useStyles = makeStyles((theme: Theme) =>

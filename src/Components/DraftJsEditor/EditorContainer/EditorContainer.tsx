@@ -10,41 +10,44 @@ import {
   CustomStyleType,
   toolBarBtns,
   keyCommands,
-  KeyCommands
-} from "./data";
+  KeyCommands,
+} from "../data";
 
 import { ToolBar } from "../ToolBar/ToolBar";
-import { keyBindingFn } from "./keyBindingFn";
-import { blockRendererFn, extendedBlockRenderMap } from "./CustomBlocks";
+import { keyBindingFn } from "../keyBindingFn";
+import { blockRendererFn, extendedBlockRenderMap } from "../CustomBlocks";
+import { compositeDecorator } from "../Decorators";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: 500,
-      margin: "50px auto"
+      margin: "50px auto",
     },
     editorWrapper: {
-      border: "1px solid #ccc"
+      border: "1px solid #ccc",
     },
     editorContent: {
       minHeight: 250,
-      padding: 5
+      padding: 5,
     },
     buttonsGroup: {
       display: "flex",
       // justifyContent: "space-between",
       flexWrap: "wrap",
-      padding: 5
+      padding: 5,
     },
     unorderedListItem: {
-      color: "red"
-    }
+      color: "red",
+    },
   })
 );
 
-export const DraftJsEditor: React.FC = () => {
+export const EditorContainer: React.FC = () => {
   const classes = useStyles();
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [editorState, setEditorState] = useState(
+    EditorState.createEmpty(compositeDecorator)
+  );
 
   const customeStylesReducer = (state: any, action: StyleMapType) => {
     switch (action.type) {
@@ -110,6 +113,26 @@ export const DraftJsEditor: React.FC = () => {
     return "";
   };
 
+  const getEntityAtCursor = (editorState: EditorState) => {
+    const selectionState = editorState.getSelection();
+    const selectionKey = selectionState.getStartKey();
+    const contentstate = editorState.getCurrentContent();
+
+    // get the block where the cursor is
+    const block = contentstate.getBlockForKey(selectionKey);
+
+    // get the Entity key at the where the cursor is
+    const entityKey = block.getEntityAt(selectionState.getStartOffset());
+    if (entityKey) {
+      // use the following method to get the entity instance
+      const entityInstance = contentstate.getEntity(entityKey);
+      const data = entityInstance.getData();
+      return data.storedText;
+    } else {
+      return "";
+    }
+  };
+
   return (
     <div className={classes.root}>
       {/* <h2>Draft.JS Editor</h2> */}
@@ -140,6 +163,9 @@ export const DraftJsEditor: React.FC = () => {
           blockRendererFn={blockRendererFn({ name: "meta-data-block" })}
         />
       </div>
+      <pre>
+        <code>{JSON.stringify(getEntityAtCursor(editorState), null, 4)}</code>
+      </pre>
     </div>
   );
 };

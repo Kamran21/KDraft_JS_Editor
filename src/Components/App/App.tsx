@@ -1,10 +1,10 @@
 import React from 'react';
-import { DraftJsEditor } from '../DraftJsEditor/DraftJsEditor';
+import { EditorContainer } from '../DraftJsEditor/EditorContainer/EditorContainer';
 
 function App() {
   return (
     <div className="App">
-     <DraftJsEditor/>
+     <EditorContainer/>
     </div>
   );
 }
