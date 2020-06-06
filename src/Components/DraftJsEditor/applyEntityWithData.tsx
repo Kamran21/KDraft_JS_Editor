@@ -34,3 +34,23 @@ export const applyEntityWithData = (
 
   return newEditorState;
 };
+
+export const getEntityAtCursor = (editorState: EditorState) => {
+  const selectionState = editorState.getSelection();
+  const selectionKey = selectionState.getStartKey();
+  const contentstate = editorState.getCurrentContent();
+
+  // get the block where the cursor is
+  const block = contentstate.getBlockForKey(selectionKey);
+
+  // get the Entity key at the where the cursor is
+  const entityKey = block.getEntityAt(selectionState.getStartOffset());
+  if (entityKey) {
+    // use the following method to get the entity instance
+    const entityInstance = contentstate.getEntity(entityKey);
+    const data = entityInstance.getData();
+    return data.storedText;
+  } else {
+    return "";
+  }
+};

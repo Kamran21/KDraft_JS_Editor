@@ -17,6 +17,8 @@ import { ToolBar } from "../ToolBar/ToolBar";
 import { keyBindingFn } from "../keyBindingFn";
 import { blockRendererFn, extendedBlockRenderMap } from "../CustomBlocks";
 import { compositeDecorator } from "../Decorators";
+import { JsonEditorContent } from "../JsonEditorContent/JsonEditorContent";
+import { EditorActions } from "../EditorActions/EditorActions";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -113,42 +115,27 @@ export const EditorContainer: React.FC = () => {
     return "";
   };
 
-  const getEntityAtCursor = (editorState: EditorState) => {
-    const selectionState = editorState.getSelection();
-    const selectionKey = selectionState.getStartKey();
-    const contentstate = editorState.getCurrentContent();
-
-    // get the block where the cursor is
-    const block = contentstate.getBlockForKey(selectionKey);
-
-    // get the Entity key at the where the cursor is
-    const entityKey = block.getEntityAt(selectionState.getStartOffset());
-    if (entityKey) {
-      // use the following method to get the entity instance
-      const entityInstance = contentstate.getEntity(entityKey);
-      const data = entityInstance.getData();
-      return data.storedText;
-    } else {
-      return "";
-    }
+  // to handle single unordered-list-item block without any text.
+  const renderPlaceholder = (placeholder: string) => {
+    const contentState = editorState.getCurrentContent();
+    const shouldHide =
+      contentState.hasText() ||
+      contentState.getBlockMap().first().getType() !== "unstyled";
+    return shouldHide ? "" : placeholder;
   };
 
   return (
     <div className={classes.root}>
-      {/* <h2>Draft.JS Editor</h2> */}
-      <div className={classes.editorWrapper}>
-        <ToolBar
-          editorState={editorState}
-          btns={toolBarBtns}
-          setStyle={setStyle}
-          dispatch={handleDispatchCustomStyle}
-          setEditorState={onChange}
-        />
-      </div>
-
+      <ToolBar
+        editorState={editorState}
+        btns={toolBarBtns}
+        setStyle={setStyle}
+        dispatch={handleDispatchCustomStyle}
+        setEditorState={onChange}
+      />
       <div className={clsx(classes.editorWrapper, classes.editorContent)}>
         <Editor
-          placeholder={"Start typing!"}
+          placeholder={renderPlaceholder("Start typing!")}
           //State
           editorState={editorState}
           onChange={onChange}
@@ -163,9 +150,8 @@ export const EditorContainer: React.FC = () => {
           blockRendererFn={blockRendererFn({ name: "meta-data-block" })}
         />
       </div>
-      <pre>
-        <code>{JSON.stringify(getEntityAtCursor(editorState), null, 4)}</code>
-      </pre>
+      <EditorActions editorState={editorState} />
+      <JsonEditorContent editorState={editorState} />
     </div>
   );
 };
