@@ -1,6 +1,7 @@
 import React, { useState, useReducer } from "react";
 
 import { Editor, EditorState, RichUtils, ContentBlock } from "draft-js";
+import "../../../../node_modules/draft-js/dist/Draft.css";
 
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import clsx from "clsx";

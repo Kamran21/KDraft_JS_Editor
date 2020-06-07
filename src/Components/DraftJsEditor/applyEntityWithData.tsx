@@ -47,10 +47,8 @@ export const getEntityAtCursor = (editorState: EditorState) => {
   const entityKey = block.getEntityAt(selectionState.getStartOffset());
   if (entityKey) {
     // use the following method to get the entity instance
-    const entityInstance = contentstate.getEntity(entityKey);
-    const data = entityInstance.getData();
-    return data.storedText;
+    return contentstate.getEntity(entityKey);
   } else {
-    return "";
+    return null;
   }
 };
